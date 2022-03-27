@@ -62,7 +62,7 @@ public class Data {
                 FileWriter writer = new FileWriter(fileName);
                 writer.write(String.valueOf(size));
                 for (int i = 0; i < size; i++) {
-                    writer.write("\n" + String.valueOf(data[i]));
+                    writer.write("\n" + data[i]);
                 }
                 writer.close();
                 System.out.println("Data successfully created and saved");
@@ -79,12 +79,13 @@ public class Data {
      * @param N Size of matrix to fill.
      * @return New matrix object with parsed data inside.
      */
-    public float[][] parseMatrix(int N) {
+    public float[][] parseMatrix(int N, int start) {
         float[][] matrix = new float[N][N];
+        int ptr = start;
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                matrix[i][j] = data[pointerPos];
-                pointerPos++;
+                matrix[i][j] = data[ptr];
+                ptr++;
             }
         }
         return matrix;
@@ -96,11 +97,12 @@ public class Data {
      * @param N Size of vector to fill.
      * @return New vector object with parsed data inside.
      */
-    public float[] parseVector(int N) {
+    public float[] parseVector(int N, int start) {
         float[] vector = new float[N];
+        int ptr = start;
         for (int i = 0; i < N; i++) {
-            vector[i] = data[pointerPos];
-            pointerPos++;
+            vector[i] = data[ptr];
+            ptr++;
         }
         return vector;
     }

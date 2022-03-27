@@ -5,37 +5,40 @@ import java.util.Arrays;
 
 public class PCS_Lab1 {
     static long timeExec = 0;
+    static long timeStart = 0;
 
     public static void main(String[] args) {
         System.out.println("Program started");
 
-        long start = System.currentTimeMillis();
         int P = 4; //Threads count. Set it so N is multiple of P.
+        int N = 1500; //Matrix and array size.
+
+        Data data = new Data(N);
+        data.loadData("test6.txt");
 
         for (int i = 0; i < P; i++) {
             int pNum = i;
             new Thread(new Runnable() {
                 public void run() {
                     System.out.println("Thread " + pNum + " started");
-                    int P = 4; //Threads count. Set it so N is multiple of P.
-                    int N = 400; //Matrix and array size.
+                    int P = 4; //Threads count. Set it so N is multiple of P. (local)
+                    int N = 1500; //Matrix and array size. (local)
                     float[][] MD;
                     float[][] MT;
                     float[][] MZ;
                     float[] B;
                     float[] D;
 
-                    Data data = new Data(N);
-                    data.loadData("test2.txt");
-                    MD = data.parseMatrix(N);
-                    MT = data.parseMatrix(N);
-                    MZ = data.parseMatrix(N);
-                    B = data.parseVector(N);
-                    D = data.parseVector(N);
+                    MD = data.parseMatrix(N, 0);
+                    MT = data.parseMatrix(N, N * N);
+                    MZ = data.parseMatrix(N, 2 * (N * N));
+                    B = data.parseVector(N, 3 * (N * N));
+                    D = data.parseVector(N, 3 * (N * N) + N);
                     System.out.println("Data successfully parsed");
 
-                    float a = 0;
+                    long start = System.currentTimeMillis();
 
+                    float a = 0;
                     float[][] MTZpart = new float[N][N / P];
                     float[][] MTDpart = new float[N][N / P];
                     float[][] MApart = new float[N][N / P];
@@ -104,7 +107,7 @@ public class PCS_Lab1 {
                         writer1.close();
                         writer2.close();
                         System.out.println("Data successfully saved on disk");
-                        setTime(finish);
+                        setTime(start, finish);
                     } catch (IOException e) {
                         System.out.println("An error occurred.");
                         e.printStackTrace();
@@ -112,11 +115,12 @@ public class PCS_Lab1 {
 
                 }
 
-                public synchronized void setTime(long endTime) {
-                    if ((endTime - start) > timeExec) timeExec = endTime - start;
+                public synchronized void setTime(long startTime, long endTime) {
+                    if (timeStart == 0) timeStart = startTime;
+                    if (timeStart > startTime) timeStart = startTime;
+                    if ((endTime - timeStart) > timeExec) timeExec = endTime - timeStart;
                     System.out.println("Current time executed = " + timeExec);
                 }
-
             }).start();
         }
     }
